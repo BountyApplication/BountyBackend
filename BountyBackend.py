@@ -4,6 +4,17 @@ import BountyDatabase
 import json
 
 app = Flask("BountyBackend")
+BountyDatabase.open_or_create_db()
+
+def db_to_json(dbString):
+    jsonObject = {
+        "number" : dbString[0][0],
+        "name" : dbString[0][1],
+        "surname" : dbString[0][2],
+        "balance" : dbString[0][3]
+    }
+    jsonString = json.dumps(jsonObject)
+    return jsonString
 
 @app.route("/")
 def bounty():
@@ -33,7 +44,8 @@ _______________''.--o/___  \_______________(_)___________\
 @app.route('/bounty/accounts', methods=['GET', 'POST'])
 def accounts():
     if request.method == 'POST':
-        return 'POST Accounts'
+        dbString = BountyDatabase.add_account(request.headers['fname'],request.headers['lname'],request.headers['balance'])
+        return db_to_json(dbString)
     else:
         f = open("dummyAccounts.json")
         accounts = json.load(f)
@@ -62,6 +74,6 @@ def products():
 @app.route('/bounty/products/<productID>', methods=['PUT'])
 def productid():
     if request.method == 'PUT':
-        return 'PUT Account'
+        return 'PUT Product'
     else:
         return 'Invalid method'
