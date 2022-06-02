@@ -1,0 +1,20 @@
+{
+    "products" : [
+        {
+            "name" : "Kaugummi",
+            "price" : 1.2
+        },
+        {
+            "name" : "Rote Schlangen",
+            "price" : 0.1
+        },
+        {
+            "name" : "Grüne Schlangen",
+            "price" : 0.15
+        },
+        {
+            "name" : "Cola-Kracher",
+            "price" : 0.2
+        }
+    ]
+}
