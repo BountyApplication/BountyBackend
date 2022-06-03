@@ -1,21 +1,30 @@
 import sqlite3
+import json
 
 def open_or_create_db():
     # connecting to database
     connection = sqlite3.connect('bounty.db')
 
+    f = open("configDatabase.json")
+    tables = json.load(f)
+    f.close()
+
     # cursor
     cursor = connection.cursor()
+    for table in tables:
+        sql_command = """CREATE TABLE IF NOT EXISTS %s ("""%table
+        columns = tables[table]['columns']
+        
+        for column in columns.keys():
+            sql_command += """%s """%column
+            sql_command += """%s, """%columns[column]
+        sql_command = sql_command[:-2]
+        sql_command += """) """
 
-    # SQL command to create a table in the database
-    sql_command = """CREATE TABLE IF NOT EXISTS accounts ( 
-    number INTEGER PRIMARY KEY UNIQUE NOT NULL, 
-    fname VARCHAR(20), 
-    lname VARCHAR(30), 
-    balance FLOAT, 
-    joining DATE);"""
-    # execute the statement
-    cursor.execute(sql_command)
+        print(sql_command)
+        # execute the statement
+        cursor.execute(sql_command)
+
     # close the connection
     connection.close()
 
