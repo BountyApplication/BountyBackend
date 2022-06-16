@@ -43,11 +43,14 @@ def accounts():
 @app.route('/bounty/accounts/<userID>', methods=['GET', 'PUT', 'POST'])
 def userid():
     if request.method == 'POST':
-        return 'POST UserID'
+        dbJSONString = DB.add_new_accounting(request.headers['accountId'],request.headers['amount'])
+        return dbJSONString
     elif request.method == 'PUT':
-        return 'PUT UserID'
+        dbJSONString = DB.modify_account(request.headers['accountId'],request.headers['fname'],request.headers['lname'])
+        return dbJSONString
     else:
-        return 'GET UserID'
+        dbJSONString = DB.get_history_of_account(request.headers['accountId'])
+        return dbJSONString
 
 @app.route('/bounty/products', methods=['GET', 'POST'])
 def products():
