@@ -34,22 +34,22 @@ _______________''.--o/___  \_______________(_)___________\
 @app.route('/bounty/accounts', methods=['GET', 'POST'])
 def accounts():
     if request.method == 'POST':
-        dbJSONString = DB.add_account(request.headers['accountId'],request.headers['fname'],request.headers['lname'],request.headers['balance'])
+        dbJSONString = DB.add_account(request.headers['fname'],request.headers['lname'],request.headers['balance'])
         return dbJSONString
     else:
         dbJSONString = DB.get_accounts()
         return dbJSONString
 
-@app.route('/bounty/accounts/<userID>', methods=['GET', 'PUT', 'POST'])
-def userid():
+@app.route('/bounty/accounts/<int:accountID>', methods=['GET', 'PUT', 'POST'])
+def userid(accountID : int):
     if request.method == 'POST':
-        dbJSONString = DB.add_new_accounting(request.headers['accountId'],request.headers['amount'])
+        dbJSONString = DB.add_new_accounting(accountID,request.headers['amount'])
         return dbJSONString
     elif request.method == 'PUT':
-        dbJSONString = DB.modify_account(request.headers['accountId'],request.headers['fname'],request.headers['lname'])
+        dbJSONString = DB.modify_account(accountID,request.headers['fname'],request.headers['lname'])
         return dbJSONString
     else:
-        dbJSONString = DB.get_history_of_account(request.headers['accountId'])
+        dbJSONString = DB.get_history_of_account(accountID)
         return dbJSONString
 
 @app.route('/bounty/products', methods=['GET', 'POST'])

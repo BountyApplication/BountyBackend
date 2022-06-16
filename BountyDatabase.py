@@ -80,7 +80,7 @@ class DBStorage:
         self.cursor.execute("""INSERT INTO history (accountId,date,amount) VALUES (?,datetime('now'),?);""", (accountId, amount))
         self.cursor.execute("""SELECT balance FROM accounts WHERE accountId=?;""", (accountId, ))
         answer = self.cursor.fetchall()
-        balance = answer[0][0] - amount
+        balance = float(answer[0][0]) - float(amount)
         self.cursor.execute("""UPDATE accounts SET balance=? WHERE accountId=?""", (balance, accountId))
         self.connection.commit()
         self.cursor.execute("""SELECT * FROM accounts WHERE accountId=?;""", (accountId, ))
