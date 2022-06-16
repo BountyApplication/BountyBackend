@@ -1,21 +1,22 @@
 {
     "accounts" : {
         "columns": {
-            "number" : "INTEGER PRIMARY KEY UNIQUE NOT NULL",
+            "accountId" : "INTEGER PRIMARY KEY AUTOINCREMENT",
             "fname" : "VARCHAR(20)",
             "lname" : "VARCHAR(30)",
             "balance" : "FLOAT",
-            "joining" : "DATE",
-            "history" : "VARCHAR(100)"
-        }
+            "joining" : "DATE"
+        },
+        "additional" : ""
     },
     "history" : {
         "columns" : {
-            "number" : "INTEGER PRIMARY KEY UNIQUE NOT NULL",
-            "accountID" : "INTEGER",
+            "number" : "INTEGER PRIMARY KEY AUTOINCREMENT",
+            "accountId" : "INTEGER",
             "date" : "DATE",
             "amount" : "FLOAT",
             "products" : "VARCHAR(100)"
-        }
+        },
+        "additional" : "FOREIGN KEY (accountId) REFERENCES accounts(accountId)"
     }
 }

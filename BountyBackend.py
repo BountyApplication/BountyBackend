@@ -4,17 +4,7 @@ import BountyDatabase
 import json
 
 app = Flask("BountyBackend")
-BountyDatabase.open_or_create_db()
-
-def db_to_json(dbString):
-    jsonObject = {
-        "number" : dbString[0][0],
-        "name" : dbString[0][1],
-        "surname" : dbString[0][2],
-        "balance" : dbString[0][3]
-    }
-    jsonString = json.dumps(jsonObject)
-    return jsonString
+DB = BountyDatabase.DBStorage("bounty")
 
 @app.route("/")
 def bounty():
@@ -44,13 +34,11 @@ _______________''.--o/___  \_______________(_)___________\
 @app.route('/bounty/accounts', methods=['GET', 'POST'])
 def accounts():
     if request.method == 'POST':
-        dbString = BountyDatabase.add_account(request.headers['fname'],request.headers['lname'],request.headers['balance'])
-        return db_to_json(dbString)
+        dbJSONString = DB.add_account(request.headers['accountId'],request.headers['fname'],request.headers['lname'],request.headers['balance'])
+        return dbJSONString
     else:
-        f = open("dummyAccounts.json")
-        accounts = json.load(f)
-        f.close()
-        return json.dumps(accounts)
+        dbJSONString = DB.get_accounts()
+        return dbJSONString
 
 @app.route('/bounty/accounts/<userID>', methods=['GET', 'PUT', 'POST'])
 def userid():
