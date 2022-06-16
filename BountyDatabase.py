@@ -51,7 +51,7 @@ class DBStorage:
         self.open_db()
         self.cursor.execute("""INSERT INTO accounts(fname,lname,balance,joining) VALUES(?,?,?,datetime('now'));""", (fname, lname, balance))
         self.connection.commit()
-        self.cursor.execute("""SELECT * FROM accounts WHERE fname = ? LIMIT 1;""", (fname, ))
+        self.cursor.execute("""SELECT * FROM accounts WHERE fname=? LIMIT 1;""", (fname, ))
         answer = self.cursor.fetchall()
         self.close_db()
         dbJSONString = self.db_to_json(answer, "accounts")
@@ -69,7 +69,7 @@ class DBStorage:
         self.open_db()
         self.cursor.execute("""UPDATE accounts SET fname=?, lname=? WHERE accountId=?;""", (fname, lname, accountId))
         self.connection.commit()
-        self.cursor.execute("""SELECT * FROM accounts;""")
+        self.cursor.execute("""SELECT * FROM accounts WHERE accountId=?;""", (accountId, ))
         answer = self.cursor.fetchall()
         self.close_db()
         dbJSONString = self.db_to_json(answer, 'accounts')
@@ -77,13 +77,13 @@ class DBStorage:
 
     def add_new_accounting(self,accountId,amount):
         self.open_db()
-        self.cursor.execute("""INSERT INTO history (accountId,date,amount) VALUES (?,datetime('now'),?);""", (accountId,amount))
+        self.cursor.execute("""INSERT INTO history (accountId,date,amount) VALUES (?,datetime('now'),?);""", (accountId, amount))
         self.cursor.execute("""SELECT balance FROM accounts WHERE accountId=?;""", (accountId, ))
         answer = self.cursor.fetchall()
         balance = answer[0][0] - amount
-        self.cursor.execute("""UPDATE accounts SET balance=? WHERE accountId=?""", (balance,accountId))
+        self.cursor.execute("""UPDATE accounts SET balance=? WHERE accountId=?""", (balance, accountId))
         self.connection.commit()
-        self.cursor.execute("""SELECT * FROM accounts""")
+        self.cursor.execute("""SELECT * FROM accounts WHERE accountId=?;""", (accountId, ))
         answer = self.cursor.fetchall()
         self.close_db()
         dbJSONString = self.db_to_json(answer, 'accounts')
@@ -91,8 +91,8 @@ class DBStorage:
 
     def remove_last_accounting(self,accontId):
         self.open_db()
-        self.cursor.execute("""INSERT INTO history (accountId,balance) VALUES (?,?);""", (accountId,balance))
-        self.cursor.execute("""UPDATE accounts SET balance=? WHERE accountId==?""", (balance,accountId))
+        self.cursor.execute("""INSERT INTO history (accountId,balance) VALUES (?,?);""", (accountId, balance))
+        self.cursor.execute("""UPDATE accounts SET balance=? WHERE accountId==?""", (balance, accountId))
         sql_command = """SELECT * FROM accounts;"""
         self.cursor.execute(sql_command)
         answer = self.cursor.fetchall()
