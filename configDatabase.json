@@ -18,5 +18,13 @@
             "products" : "VARCHAR(100)"
         },
         "additional" : "FOREIGN KEY (accountId) REFERENCES accounts(accountId)"
+    },
+    "products" : {
+        "columns" : {
+            "number" : "INTEGER PRIMARY KEY AUTOINCREMENT",
+            "name" : "VARCHAR(20)",
+            "price" : "FLOAT"
+        },
+        "additional" : ""
     }
 }
