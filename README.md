@@ -24,10 +24,10 @@ Unfortunately up to now this is a manual process...
 ## Server application
 Make sure this repository is cloned into some working directory e.g. /home/pi/BountyBackend.
 ## Nginx configuration
-Add the follwing lines to Nginx's configuration e.g. in file: /etc/nginx/sites-enabled/default
-> location /bounty/ {
->   proxy_pass http://localhost:9000
-> }
+Add the follwing lines to Nginx's configuration e.g. in the server section in file: /etc/nginx/sites-enabled/default
+location /bounty/ {
+  proxy_pass http://localhost:9000
+}
 ## Systemd Unit
 Create a systemd unit e.g. /usr/lib/systemd/system/bountybackend.service with this content:
 [Unit]
