@@ -9,7 +9,7 @@ More details here: https://flask.palletsprojects.com/en/2.1.x/installation/
 
 Then run these commands in a PowerShell:
 - $env:FLASK_APP = "BountyBackend"
--  python -m flask run
+- python -m flask run
 
 This should make the backend available at http://127.0.0.1:5000
 
@@ -19,6 +19,7 @@ For production install Nginx and Gunicorn.
 There are many ways to do that. Here is one example that seemed to be an easy yet secure setup:
 - Nginx as proxy HTTP-Server
 - Gunicorn as WSGI-Server
+
 Unfortunately up to now this is a manual process...
 ## Server application
 Make sure this repository is cloned into some working directory e.g. /home/pi/BountyBackend.
