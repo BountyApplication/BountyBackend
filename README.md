@@ -33,6 +33,7 @@ Create a systemd unit e.g. /usr/lib/systemd/system/bountybackend.service with th
 - [Unit]
 - Description=Bounty Database Server Application
 - After=network.target
+- Before=nginx
 - 
 - [Service]
 - User=pi
@@ -43,3 +44,6 @@ Create a systemd unit e.g. /usr/lib/systemd/system/bountybackend.service with th
 - 
 - [Install]
 - WantedBy=multi-user.target
+
+Remember to enable the systemd unit by
+- systemctl enable bountybackend.service
