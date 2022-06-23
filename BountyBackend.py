@@ -16,11 +16,13 @@
 #
 
 from flask import Flask
+from flask_cors import CORS
 from flask import request
 import BountyDatabase
 import json
 
 app = Flask("BountyBackend")
+CORS(app)
 DB = BountyDatabase.DBStorage("bounty")
 
 @app.route("/bounty/")
