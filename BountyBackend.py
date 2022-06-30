@@ -71,10 +71,10 @@ def userid(accountID : int):
         dbJSONString = DB.get_history_of_account(accountID)
         return dbJSONString
 
-@app.route('/bounty/products', methods=['GET', 'POST'])
+@app.route('/bounty/products', methods=['GET', 'POST', 'PUT'])
 def products():
     if request.method == 'POST':
-        dbJSONString = DB.add_new_product(request.headers['name'],request.headers['price'])
+        dbJSONString = DB.add_product(request.headers['name'],request.headers['price'])
         return dbJSONString
     elif request.method == 'PUT':
         dbJSONString = DB.modify_product(request.headers['id'],request.headers['name'],request.headers['price'])
