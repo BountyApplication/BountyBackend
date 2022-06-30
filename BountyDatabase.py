@@ -141,9 +141,29 @@ class DBStorage:
         dbJSONString = self.db_to_json(answer, 'history')
         return dbJSONString
 
+    def add_product(self, name, price):
+        self.open_db()
+        self.cursor.execute("""INSERT INTO products(name,price) VALUES(?,?);""", (name, price))
+        self.connection.commit()
+        self.cursor.execute("""SELECT * FROM products WHERE name=? LIMIT 1;""", (name, ))
+        answer = self.cursor.fetchall()
+        self.close_db()
+        dbJSONString = self.db_to_json(answer, "products")
+        return dbJSONString
+
     def get_products(self):
         self.open_db()
         self.cursor.execute("""SELECT * FROM products;""")
+        answer = self.cursor.fetchall()
+        self.close_db()
+        dbJSONString = self.db_to_json(answer, 'products')
+        return dbJSONString
+
+    def modify_product(self,id,name,price):
+        self.open_db()
+        self.cursor.execute("""UPDATE products SET name=?, price=? WHERE id=?;""", (name, price, id))
+        self.connection.commit()
+        self.cursor.execute("""SELECT * FROM products WHERE id=?;""", (id, ))
         answer = self.cursor.fetchall()
         self.close_db()
         dbJSONString = self.db_to_json(answer, 'products')

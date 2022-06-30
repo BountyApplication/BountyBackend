@@ -74,7 +74,11 @@ def userid(accountID : int):
 @app.route('/bounty/products', methods=['GET', 'POST'])
 def products():
     if request.method == 'POST':
-        return 'POST Products'
+        dbJSONString = DB.add_new_product(request.headers['name'],request.headers['price'])
+        return dbJSONString
+    elif request.method == 'PUT':
+        dbJSONString = DB.modify_product(request.headers['id'],request.headers['name'],request.headers['price'])
+        return dbJSONString
     else:
         dbJSONString = DB.get_products()
         return dbJSONString

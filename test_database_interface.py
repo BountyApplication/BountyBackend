@@ -46,3 +46,16 @@ class TestClass:
         result = DB.get_history_of_account(1)
         DB.close_db()
         assert result != ""
+
+    def test_add_product(self):
+        DB = BountyDatabase.DBStorage("bounty")
+        result = DB.add_product("qeinf",2.4)
+        DB.close_db()
+        assert result != ""
+    
+    def test_modify_product(self):
+        DB = BountyDatabase.DBStorage("bounty")
+        result = DB.add_product("oeinr",2.4)
+        result = DB.modify_product(1,"efonr",1.45)
+        DB.close_db()
+        assert result != ""
