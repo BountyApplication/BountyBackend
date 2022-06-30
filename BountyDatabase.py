@@ -50,19 +50,35 @@ class DBStorage:
             # read columns from db
             self.cursor.execute("""PRAGMA table_info(accounts);""")
             tableinfo = self.cursor.fetchall()
+
+            if table == "products":
+                self.f = open("dummyProducts.json")
+                products = json.load(self.f)
+                self.f.close()
+                for product in products["products"]:
+                    self.cursor.execute("""INSERT INTO products(name,price) VALUES(?,?);""", (product["name"],product["price"]))
+                    self.connection.commit()
+            if table == "accounts":
+                self.f = open("dummyAccounts.json")
+                accounts = json.load(self.f)
+                self.f.close()
+                for account in accounts["accounts"]:
+                    self.cursor.execute("""INSERT INTO accounts(fname,lname,balance) VALUES(?,?,?);""", (account["fname"], account["lname"],account["balance"]))
+                    self.connection.commit()
         self.close_db()
 
     def db_to_json(self, dbData, table):
         columns = self.tables[table]['columns']
         jsonString = """{"""
-        jsonObject = { table : [] }
+        jsonObject = []
         for x in range(0,len(dbData)):
-            jsonObject[table].append({})
+            jsonObject.append({})
             columnidx = 0
             for column in columns:
-                jsonObject[table][x][column] = dbData[x][columnidx]
+                jsonObject[x][column] = dbData[x][columnidx]
                 columnidx += 1
-        return json.dumps(jsonObject)
+        jsonString = json.dumps(jsonObject)
+        return jsonString
 
     def add_account(self, fname, lname, balance):
         self.open_db()
@@ -123,6 +139,14 @@ class DBStorage:
         answer = self.cursor.fetchall()
         self.close_db()
         dbJSONString = self.db_to_json(answer, 'history')
+        return dbJSONString
+
+    def get_products(self):
+        self.open_db()
+        self.cursor.execute("""SELECT * FROM products;""")
+        answer = self.cursor.fetchall()
+        self.close_db()
+        dbJSONString = self.db_to_json(answer, 'products')
         return dbJSONString
 
     def open_db(self):

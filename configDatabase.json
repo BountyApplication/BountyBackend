@@ -21,7 +21,7 @@
     },
     "products" : {
         "columns" : {
-            "number" : "INTEGER PRIMARY KEY AUTOINCREMENT",
+            "id" : "INTEGER PRIMARY KEY AUTOINCREMENT",
             "name" : "VARCHAR(20)",
             "price" : "FLOAT"
         },

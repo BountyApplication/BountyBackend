@@ -76,10 +76,8 @@ def products():
     if request.method == 'POST':
         return 'POST Products'
     else:
-        f = open("dummyProducts.json")
-        products = json.load(f)
-        f.close()
-        return json.dumps(products)
+        dbJSONString = DB.get_products()
+        return dbJSONString
 
 @app.route('/bounty/products/<productID>', methods=['PUT'])
 def productid():

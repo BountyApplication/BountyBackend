@@ -1,8 +1,8 @@
 {
     "accounts" : [
         {
-            "name" : "Cornelius",
-            "surname" : "Bott",
+            "fname" : "Cornelius",
+            "lname" : "Bott",
             "balance" : 20.20,
             "history" : [
                 {
@@ -12,8 +12,8 @@
             ]
         },
         {
-            "name" : "Isajah",
-            "surname" : "Tappe",
+            "fname" : "Isajah",
+            "lname" : "Tappe",
             "balance" : 20.20,
             "history" : [
                 {
@@ -23,8 +23,8 @@
             ]
         },
         {
-            "name" : "Michael",
-            "surname" : "Knöppler",
+            "fname" : "Michael",
+            "lname" : "Knoeppler",
             "balance" : 10.20,
             "history" : [
                 {
