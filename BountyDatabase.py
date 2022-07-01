@@ -120,7 +120,7 @@ class DBStorage:
         if (newBalance < 0):
             return 400
         self.cursor.execute("""UPDATE accounts SET balance=? WHERE userId=?""", (newBalance, accountId))
-        self.cursor.execute("""INSERT INTO history (userId,date,total,correction,cashPayment,productSum,products) VALUES (?,datetime('now'),?,?,?,?,?);""", (accountId, total, correction, cashPayment, productSum, products))
+        self.cursor.execute("""INSERT INTO history (userId,date,oldBalance,newBalance,total,correction,cashPayment,productSum,products) VALUES (?,datetime('now'),?,?,?,?,?,?,?);""", (accountId,oldBalance, newBalance, total, correction, cashPayment, productSum, products))
         self.connection.commit()
         self.cursor.execute("""SELECT * FROM accounts WHERE userId=?;""", (accountId, ))
         answer = self.cursor.fetchall()
