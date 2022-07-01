@@ -17,12 +17,14 @@
 
 import sqlite3
 import json
+from flask import render_template
+import os.path
 
 class DBStorage:
     def __init__(self, name):
         print(sqlite3.sqlite_version)
         self.name = name
-        self.open_db()
+        self.isCreated = self.open_db()
 
         # read db config
         self.f = open("configDatabase.json")
@@ -51,20 +53,21 @@ class DBStorage:
             self.cursor.execute("""PRAGMA table_info(accounts);""")
             tableinfo = self.cursor.fetchall()
 
-            if table == "products":
-                self.f = open("dummyProducts.json")
-                products = json.load(self.f)
-                self.f.close()
-                for product in products["products"]:
-                    self.cursor.execute("""INSERT INTO products(name,price) VALUES(?,?);""", (product["name"],product["price"]))
-                    self.connection.commit()
-            if table == "accounts":
-                self.f = open("dummyAccounts.json")
-                accounts = json.load(self.f)
-                self.f.close()
-                for account in accounts["accounts"]:
-                    self.cursor.execute("""INSERT INTO accounts(firstname,lastname,balance) VALUES(?,?,?);""", (account["firstname"], account["lastname"],account["balance"]))
-                    self.connection.commit()
+            if not self.fileIsPresent:
+                if table == "products":
+                    self.f = open("dummyProducts.json")
+                    products = json.load(self.f)
+                    self.f.close()
+                    for product in products["products"]:
+                        self.cursor.execute("""INSERT INTO products(name,price) VALUES(?,?);""", (product["name"],product["price"]))
+                        self.connection.commit()
+                if table == "accounts":
+                    self.f = open("dummyAccounts.json")
+                    accounts = json.load(self.f)
+                    self.f.close()
+                    for account in accounts["accounts"]:
+                        self.cursor.execute("""INSERT INTO accounts(firstname,lastname,balance) VALUES(?,?,?);""", (account["firstname"], account["lastname"],account["balance"]))
+                        self.connection.commit()
         self.close_db()
 
     def db_to_json(self, dbData, table):
@@ -108,9 +111,8 @@ class DBStorage:
         dbJSONString = self.db_to_json(answer, 'accounts')
         return dbJSONString
 
-    def add_new_accounting(self, accountId, total, products):
+    def add_new_accounting(self, accountId, total, products, correction, cashPayment, productSum):
         self.open_db()
-        self.cursor.execute("""INSERT INTO history (userId,date,total,products) VALUES (?,datetime('now'),?,?);""", (accountId, total, products))
         self.cursor.execute("""SELECT balance FROM accounts WHERE userId=?;""", (accountId, ))
         answer = self.cursor.fetchall()
         oldBalance = float(answer[0][0])
@@ -118,6 +120,7 @@ class DBStorage:
         if (newBalance < 0):
             return 400
         self.cursor.execute("""UPDATE accounts SET balance=? WHERE userId=?""", (newBalance, accountId))
+        self.cursor.execute("""INSERT INTO history (userId,date,total,correction,cashPayment,productSum,products) VALUES (?,datetime('now'),?,?,?,?,?);""", (accountId, total, correction, cashPayment, productSum, products))
         self.connection.commit()
         self.cursor.execute("""SELECT * FROM accounts WHERE userId=?;""", (accountId, ))
         answer = self.cursor.fetchall()
@@ -173,6 +176,7 @@ class DBStorage:
         return dbJSONString
 
     def open_db(self):
+        self.fileIsPresent = os.path.exists(self.name + '.db')
         # connecting to database
         self.connection = sqlite3.connect(self.name + '.db')
         self.cursor = self.connection.cursor()

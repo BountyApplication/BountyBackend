@@ -21,7 +21,7 @@
             "correction" : "FLOAT",
             "cashPayment" : "FLOAT",
             "productSum" : "FLOAT",
-            "products" : "VARCHAR(100)"
+            "products" : "VARCHAR(1500)"
         },
         "additional" : "FOREIGN KEY (userId) REFERENCES accounts(userId)"
     },
