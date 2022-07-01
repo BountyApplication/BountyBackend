@@ -68,6 +68,12 @@ def userid(userId : int):
         dbJSONString = DB.modify_account(userId,request.headers['firstname'],request.headers['lastname'])
         return dbJSONString
     else:
+        dbJSONString = DB.get_account_by_id(userId)
+        return dbJSONString
+
+@app.route('/bounty/history/<int:userId>', methods=['GET'])
+def history(userId : int):
+    if request.method == 'GET':
         dbJSONString = DB.get_history_of_account(userId)
         return dbJSONString
 
@@ -82,3 +88,8 @@ def products():
     else:
         dbJSONString = DB.get_products()
         return dbJSONString
+
+@app.route('/bounty/cards/<int>:cardId', methods=['GET'])
+def cards(cardId: int):
+    if request.method == 'GET':
+        return 'GET card'

@@ -101,6 +101,14 @@ class DBStorage:
         dbJSONString = self.db_to_json(answer, 'accounts')
         return dbJSONString
 
+    def get_account_by_id(self, accountId):
+        self.open_db()
+        self.cursor.execute("""SELECT * FROM accounts WHERE userId=?;""", (accountId, ))
+        answer = self.cursor.fetchall()
+        self.close_db()
+        dbJSONString = self.db_to_json(answer, 'accounts')
+        return dbJSONString
+
     def modify_account(self,accountId,firstname,lastname):
         self.open_db()
         self.cursor.execute("""UPDATE accounts SET firstname=?, lastname=? WHERE userId=?;""", (firstname, lastname, accountId))
