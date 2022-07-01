@@ -63,7 +63,7 @@ class DBStorage:
                 accounts = json.load(self.f)
                 self.f.close()
                 for account in accounts["accounts"]:
-                    self.cursor.execute("""INSERT INTO accounts(fname,lname,balance) VALUES(?,?,?);""", (account["fname"], account["lname"],account["balance"]))
+                    self.cursor.execute("""INSERT INTO accounts(firstname,lastname,balance) VALUES(?,?,?);""", (account["firstname"], account["lastname"],account["balance"]))
                     self.connection.commit()
         self.close_db()
 
@@ -80,11 +80,11 @@ class DBStorage:
         jsonString = json.dumps(jsonObject)
         return jsonString
 
-    def add_account(self, fname, lname, balance):
+    def add_account(self, firstname, lastname, balance):
         self.open_db()
-        self.cursor.execute("""INSERT INTO accounts(fname,lname,balance,joining) VALUES(?,?,?,datetime('now'));""", (fname, lname, balance))
+        self.cursor.execute("""INSERT INTO accounts(firstname,lastname,balance,joining) VALUES(?,?,?,datetime('now'));""", (firstname, lastname, balance))
         self.connection.commit()
-        self.cursor.execute("""SELECT * FROM accounts WHERE fname=? LIMIT 1;""", (fname, ))
+        self.cursor.execute("""SELECT * FROM accounts WHERE firstname=? LIMIT 1;""", (firstname, ))
         answer = self.cursor.fetchall()
         self.close_db()
         dbJSONString = self.db_to_json(answer, "accounts")
@@ -98,34 +98,34 @@ class DBStorage:
         dbJSONString = self.db_to_json(answer, 'accounts')
         return dbJSONString
 
-    def modify_account(self,accountId,fname,lname):
+    def modify_account(self,accountId,firstname,lastname):
         self.open_db()
-        self.cursor.execute("""UPDATE accounts SET fname=?, lname=? WHERE accountId=?;""", (fname, lname, accountId))
+        self.cursor.execute("""UPDATE accounts SET firstname=?, lastname=? WHERE userId=?;""", (firstname, lastname, accountId))
         self.connection.commit()
-        self.cursor.execute("""SELECT * FROM accounts WHERE accountId=?;""", (accountId, ))
+        self.cursor.execute("""SELECT * FROM accounts WHERE userId=?;""", (accountId, ))
         answer = self.cursor.fetchall()
         self.close_db()
         dbJSONString = self.db_to_json(answer, 'accounts')
         return dbJSONString
 
-    def add_new_accounting(self,accountId,amount):
+    def add_new_accounting(self, accountId, amount):
         self.open_db()
-        self.cursor.execute("""INSERT INTO history (accountId,date,amount) VALUES (?,datetime('now'),?);""", (accountId, amount))
-        self.cursor.execute("""SELECT balance FROM accounts WHERE accountId=?;""", (accountId, ))
+        self.cursor.execute("""INSERT INTO history (userId,date,amount) VALUES (?,datetime('now'),?);""", (accountId, amount))
+        self.cursor.execute("""SELECT balance FROM accounts WHERE userId=?;""", (accountId, ))
         answer = self.cursor.fetchall()
         balance = float(answer[0][0]) - float(amount)
-        self.cursor.execute("""UPDATE accounts SET balance=? WHERE accountId=?""", (balance, accountId))
+        self.cursor.execute("""UPDATE accounts SET balance=? WHERE userId=?""", (balance, accountId))
         self.connection.commit()
-        self.cursor.execute("""SELECT * FROM accounts WHERE accountId=?;""", (accountId, ))
+        self.cursor.execute("""SELECT * FROM accounts WHERE userId=?;""", (accountId, ))
         answer = self.cursor.fetchall()
         self.close_db()
         dbJSONString = self.db_to_json(answer, 'accounts')
         return dbJSONString
 
-    def remove_last_accounting(self,accontId):
+    def remove_last_accounting(self, accontId):
         self.open_db()
-        self.cursor.execute("""INSERT INTO history (accountId,balance) VALUES (?,?);""", (accountId, balance))
-        self.cursor.execute("""UPDATE accounts SET balance=? WHERE accountId==?""", (balance, accountId))
+        self.cursor.execute("""INSERT INTO history (userId,balance) VALUES (?,?);""", (accountId, balance))
+        self.cursor.execute("""UPDATE accounts SET balance=? WHERE userId==?""", (balance, accountId))
         sql_command = """SELECT * FROM accounts;"""
         self.cursor.execute(sql_command)
         answer = self.cursor.fetchall()
@@ -133,9 +133,9 @@ class DBStorage:
         dbJSONString = db_to_json(answer, 'accounts')
         return dbJSONString
     
-    def get_history_of_account(self,accountId):
+    def get_history_of_account(self, accountId):
         self.open_db()
-        self.cursor.execute("""SELECT * FROM history WHERE accountId=?;""", (accountId, ))
+        self.cursor.execute("""SELECT * FROM history WHERE userId=?;""", (accountId, ))
         answer = self.cursor.fetchall()
         self.close_db()
         dbJSONString = self.db_to_json(answer, 'history')
@@ -159,11 +159,11 @@ class DBStorage:
         dbJSONString = self.db_to_json(answer, 'products')
         return dbJSONString
 
-    def modify_product(self,id,name,price):
+    def modify_product(self, id, name, price):
         self.open_db()
-        self.cursor.execute("""UPDATE products SET name=?, price=? WHERE id=?;""", (name, price, id))
+        self.cursor.execute("""UPDATE products SET name=?, price=? WHERE productId=?;""", (name, price, id))
         self.connection.commit()
-        self.cursor.execute("""SELECT * FROM products WHERE id=?;""", (id, ))
+        self.cursor.execute("""SELECT * FROM products WHERE productId=?;""", (id, ))
         answer = self.cursor.fetchall()
         self.close_db()
         dbJSONString = self.db_to_json(answer, 'products')

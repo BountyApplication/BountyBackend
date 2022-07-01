@@ -53,22 +53,22 @@ _______________''.--o/___  \_______________(_)___________\
 @app.route('/bounty/accounts', methods=['GET', 'POST'])
 def accounts():
     if request.method == 'POST':
-        dbJSONString = DB.add_account(request.headers['fname'],request.headers['lname'],request.headers['balance'])
+        dbJSONString = DB.add_account(request.headers['firstname'],request.headers['lastname'],request.headers['balance'])
         return dbJSONString
     else:
         dbJSONString = DB.get_accounts()
         return dbJSONString
 
-@app.route('/bounty/accounts/<int:accountID>', methods=['GET', 'PUT', 'POST'])
+@app.route('/bounty/accounts/<int:userId>', methods=['GET', 'PUT', 'POST'])
 def userid(accountID : int):
     if request.method == 'POST':
-        dbJSONString = DB.add_new_accounting(accountID,request.headers['amount'])
+        dbJSONString = DB.add_new_accounting(userId,request.headers['amount'])
         return dbJSONString
     elif request.method == 'PUT':
-        dbJSONString = DB.modify_account(accountID,request.headers['fname'],request.headers['lname'])
+        dbJSONString = DB.modify_account(userId,request.headers['firstname'],request.headers['lastname'])
         return dbJSONString
     else:
-        dbJSONString = DB.get_history_of_account(accountID)
+        dbJSONString = DB.get_history_of_account(userId)
         return dbJSONString
 
 @app.route('/bounty/products', methods=['GET', 'POST', 'PUT'])
@@ -77,15 +77,8 @@ def products():
         dbJSONString = DB.add_product(request.headers['name'],request.headers['price'])
         return dbJSONString
     elif request.method == 'PUT':
-        dbJSONString = DB.modify_product(request.headers['id'],request.headers['name'],request.headers['price'])
+        dbJSONString = DB.modify_product(request.headers['productId'],request.headers['name'],request.headers['price'])
         return dbJSONString
     else:
         dbJSONString = DB.get_products()
         return dbJSONString
-
-@app.route('/bounty/products/<productID>', methods=['PUT'])
-def productid():
-    if request.method == 'PUT':
-        return 'PUT Product'
-    else:
-        return 'Invalid method'

@@ -1,49 +1,19 @@
 {
     "accounts" : [
         {
-            "fname" : "Cornelius",
-            "lname" : "Bott",
-            "balance" : 20.20,
-            "history" : [
-                {
-                    "datetime" : "2022-06-02T19:40:12Z",
-                    "amount" : 3.80
-                }
-            ]
+            "firstname" : "Cornelius",
+            "lastname" : "Bott",
+            "balance" : 20.20
         },
         {
-            "fname" : "Isajah",
-            "lname" : "Tappe",
-            "balance" : 20.20,
-            "history" : [
-                {
-                    "datetime" : "2022-06-02T19:41:55Z",
-                    "amount" : 3.80
-                }
-            ]
+            "firstname" : "Isajah",
+            "lastname" : "Tappe",
+            "balance" : 20.20
         },
         {
-            "fname" : "Michael",
-            "lname" : "Knoeppler",
-            "balance" : 10.20,
-            "history" : [
-                {
-                    "datetime" : "2022-06-02T19:42:12Z",
-                    "amount" : 3.80
-                },
-                {
-                    "datetime" : "2022-06-02T19:42:34Z",
-                    "amount" : 4.00
-                },
-                {
-                    "datetime" : "2022-06-02T19:47:45Z",
-                    "amount" : 2.35
-                },
-                {
-                    "datetime" : "2022-06-02T19:47:55Z",
-                    "amount" : 3.65
-                }
-            ]
+            "firstname" : "Michael",
+            "lastname" : "Knoeppler",
+            "balance" : 10.20
         }
     ]
 }
