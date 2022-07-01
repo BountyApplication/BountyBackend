@@ -60,9 +60,9 @@ def accounts():
         return dbJSONString
 
 @app.route('/bounty/accounts/<int:userId>', methods=['GET', 'PUT', 'POST'])
-def userid(accountID : int):
+def userid(userId : int):
     if request.method == 'POST':
-        dbJSONString = DB.add_new_accounting(userId,request.headers['amount'])
+        dbJSONString = DB.add_new_accounting(userId, request.headers['total'], request.headers['products'])
         return dbJSONString
     elif request.method == 'PUT':
         dbJSONString = DB.modify_account(userId,request.headers['firstname'],request.headers['lastname'])

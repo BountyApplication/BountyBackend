@@ -108,13 +108,16 @@ class DBStorage:
         dbJSONString = self.db_to_json(answer, 'accounts')
         return dbJSONString
 
-    def add_new_accounting(self, accountId, amount):
+    def add_new_accounting(self, accountId, total, products):
         self.open_db()
-        self.cursor.execute("""INSERT INTO history (userId,date,amount) VALUES (?,datetime('now'),?);""", (accountId, amount))
+        self.cursor.execute("""INSERT INTO history (userId,date,total,products) VALUES (?,datetime('now'),?,?);""", (accountId, total, products))
         self.cursor.execute("""SELECT balance FROM accounts WHERE userId=?;""", (accountId, ))
         answer = self.cursor.fetchall()
-        balance = float(answer[0][0]) - float(amount)
-        self.cursor.execute("""UPDATE accounts SET balance=? WHERE userId=?""", (balance, accountId))
+        oldBalance = float(answer[0][0])
+        newBalance = oldBalance - float(total)
+        if (newBalance < 0):
+            return 400
+        self.cursor.execute("""UPDATE accounts SET balance=? WHERE userId=?""", (newBalance, accountId))
         self.connection.commit()
         self.cursor.execute("""SELECT * FROM accounts WHERE userId=?;""", (accountId, ))
         answer = self.cursor.fetchall()

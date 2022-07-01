@@ -15,7 +15,12 @@
             "bookingId" : "INTEGER PRIMARY KEY AUTOINCREMENT",
             "userId" : "INTEGER",
             "date" : "DATE",
-            "amount" : "FLOAT",
+            "oldBalance" : "FLOAT",
+            "newBalance" : "FLOAT",
+            "total" : "FLOAT",
+            "correction" : "FLOAT",
+            "cashPayment" : "FLOAT",
+            "productSum" : "FLOAT",
             "products" : "VARCHAR(100)"
         },
         "additional" : "FOREIGN KEY (userId) REFERENCES accounts(userId)"
@@ -24,7 +29,8 @@
         "columns" : {
             "productId" : "INTEGER PRIMARY KEY AUTOINCREMENT",
             "name" : "VARCHAR(20)",
-            "price" : "FLOAT"
+            "price" : "FLOAT",
+            "active" : "INTEGER DEFAULT 1"
         },
         "additional" : ""
     },
