@@ -120,7 +120,7 @@ class DBStorage:
         if (newBalance < 0):
             return 400
         self.cursor.execute("""UPDATE accounts SET balance=? WHERE userId=?""", (newBalance, accountId))
-        self.cursor.execute("""INSERT INTO history (userId,date,oldBalance,newBalance,total,correction,cashPayment,productSum,products) VALUES (?,datetime('now'),?,?,?,?,?,?,?);""", (accountId,oldBalance, newBalance, total, correction, cashPayment, productSum, products))
+        self.cursor.execute("""INSERT INTO history (userId,date,oldBalance,newBalance,total,correction,cashPayment,productSum,products) VALUES (?,datetime('now'),?,?,?,?,?,?,?);""", (accountId, oldBalance, newBalance, total, correction, cashPayment, productSum, products))
         self.connection.commit()
         self.cursor.execute("""SELECT * FROM accounts WHERE userId=?;""", (accountId, ))
         answer = self.cursor.fetchall()
@@ -165,9 +165,9 @@ class DBStorage:
         dbJSONString = self.db_to_json(answer, 'products')
         return dbJSONString
 
-    def modify_product(self, id, name, price):
+    def modify_product(self, id, name, price, active):
         self.open_db()
-        self.cursor.execute("""UPDATE products SET name=?, price=? WHERE productId=?;""", (name, price, id))
+        self.cursor.execute("""UPDATE products SET name=?, price=?, active=? WHERE productId=?;""", (name, price, active, id))
         self.connection.commit()
         self.cursor.execute("""SELECT * FROM products WHERE productId=?;""", (id, ))
         answer = self.cursor.fetchall()
