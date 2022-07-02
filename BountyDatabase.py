@@ -72,14 +72,19 @@ class DBStorage:
 
     def db_to_json(self, dbData, table):
         columns = self.tables[table]['columns']
-        jsonString = """{"""
-        jsonObject = []
-        for x in range(0,len(dbData)):
-            jsonObject.append({})
-            columnidx = 0
+        if dbData.len() > 1:
+            jsonObject = []
+            for x in range(0,len(dbData)):
+                jsonObject.append({})
+                columnidx = 0
+                for column in columns:
+                    jsonObject[x][column] = dbData[x][columnidx]
+                    columnidx += 1
+        else:
+            jsonObject = {}
             for column in columns:
-                jsonObject[x][column] = dbData[x][columnidx]
-                columnidx += 1
+                    jsonObject[column] = dbData[0][columnidx]
+                    columnidx += 1
         jsonString = json.dumps(jsonObject)
         return jsonString
 
