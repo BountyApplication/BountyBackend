@@ -53,7 +53,7 @@ class DBStorage:
             self.cursor.execute("""PRAGMA table_info(accounts);""")
             tableinfo = self.cursor.fetchall()
 
-            if not self.fileIsPresent:
+            if not self.dbAlreadyExists:
                 if table == "products":
                     self.f = open("dummyProducts.json")
                     products = json.load(self.f)
@@ -72,7 +72,7 @@ class DBStorage:
 
     def db_to_json(self, dbData, table):
         columns = self.tables[table]['columns']
-        if dbData.len() > 1:
+        if len(dbData) > 1:
             jsonObject = []
             for x in range(0,len(dbData)):
                 jsonObject.append({})
@@ -82,6 +82,7 @@ class DBStorage:
                     columnidx += 1
         else:
             jsonObject = {}
+            columnidx = 0
             for column in columns:
                     jsonObject[column] = dbData[0][columnidx]
                     columnidx += 1
@@ -189,7 +190,7 @@ class DBStorage:
         return dbJSONString
 
     def open_db(self):
-        self.fileIsPresent = os.path.exists(self.name + '.db')
+        self.dbAlreadyExists = os.path.exists(self.name + '.db')
         # connecting to database
         self.connection = sqlite3.connect(self.name + '.db')
         self.cursor = self.connection.cursor()
