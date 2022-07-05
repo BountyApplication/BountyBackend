@@ -19,12 +19,16 @@ import sqlite3
 import json
 from flask import render_template
 import os.path
+import threading
+
+lock = threading.Lock()
 
 class DBStorage:
     def __init__(self, name):
         print(sqlite3.sqlite_version)
         self.name = name
         self.isCreated = self.open_db()
+        # Define the lock globally
 
         # read db config
         self.f = open("configDatabase.json")
@@ -191,6 +195,7 @@ class DBStorage:
         return dbJSONString
 
     def open_db(self):
+        lock.acquire(True)
         self.dbAlreadyExists = os.path.exists(self.name + '.db')
         # connecting to database
         self.connection = sqlite3.connect(self.name + '.db')
@@ -199,3 +204,4 @@ class DBStorage:
     def close_db(self):
         # close the connection
         self.connection.close()
+        lock.release()
