@@ -72,20 +72,21 @@ class DBStorage:
 
     def db_to_json(self, dbData, table):
         columns = self.tables[table]['columns']
-        if len(dbData) > 1:
-            jsonObject = []
+        jsonObject = []
+        if len(dbData) > 1 or table != "accounts": # for table accounts we want to have only a single user replied, not a list
             for x in range(0,len(dbData)):
                 jsonObject.append({})
                 columnidx = 0
                 for column in columns:
                     jsonObject[x][column] = dbData[x][columnidx]
                     columnidx += 1
-        else:
+        elif len(dbData) == 1:
             jsonObject = {}
             columnidx = 0
             for column in columns:
                     jsonObject[column] = dbData[0][columnidx]
                     columnidx += 1
+        
         jsonString = json.dumps(jsonObject)
         return jsonString
 
