@@ -94,9 +94,9 @@ class DBStorage:
         jsonString = json.dumps(jsonObject)
         return jsonString
 
-    def add_account(self, firstname, lastname, balance):
+    def add_account(self, firstname, lastname, balance, cardId):
         self.open_db()
-        self.cursor.execute("""INSERT INTO accounts(firstname,lastname,balance,joining) VALUES(?,?,?,datetime('now'));""", (firstname, lastname, balance))
+        self.cursor.execute("""INSERT INTO accounts(firstname,lastname,balance,joining,cardId) VALUES(?,?,?,datetime('now'),?);""", (firstname, lastname, balance, cardId))
         self.connection.commit()
         self.cursor.execute("""SELECT * FROM accounts WHERE firstname=? LIMIT 1;""", (firstname, ))
         answer = self.cursor.fetchall()
@@ -112,7 +112,7 @@ class DBStorage:
         dbJSONString = self.db_to_json(answer, 'accounts')
         return dbJSONString
 
-    def get_account_by_id(self, accountId):
+    def get_account_by_userid(self, accountId):
         self.open_db()
         self.cursor.execute("""SELECT * FROM accounts WHERE userId=?;""", (accountId, ))
         answer = self.cursor.fetchall()
@@ -120,9 +120,20 @@ class DBStorage:
         dbJSONString = self.db_to_json(answer, 'accounts')
         return dbJSONString
 
-    def modify_account(self,accountId,firstname,lastname):
+    def get_account_by_cardid(self, cardId):
         self.open_db()
-        self.cursor.execute("""UPDATE accounts SET firstname=?, lastname=? WHERE userId=?;""", (firstname, lastname, accountId))
+        self.cursor.execute("""SELECT * FROM accounts WHERE cardId=?;""", (cardId, ))
+        answer = self.cursor.fetchall()
+        self.close_db()
+        dbJSONString = self.db_to_json(answer, 'accounts')
+        return dbJSONString
+
+    def modify_account(self,accountId,firstname,lastname,cardId,active):
+        self.open_db()
+        if cardId == 0:
+            self.cursor.execute("""SELECT cardId FROM accounts WHERE accountId=?""", (accountId, ))
+            cardId = int(self.cursor.fetchall())
+        self.cursor.execute("""UPDATE accounts SET firstname=?, lastname=?, cardId=?, active=? WHERE userId=?;""", (firstname, lastname, cardId, active, accountId))
         self.connection.commit()
         self.cursor.execute("""SELECT * FROM accounts WHERE userId=?;""", (accountId, ))
         answer = self.cursor.fetchall()
@@ -136,11 +147,10 @@ class DBStorage:
         answer = self.cursor.fetchall()
         oldBalance = float(answer[0][0])
         newBalance = oldBalance - float(total)
-        if (newBalance < 0):
-            return 400
-        self.cursor.execute("""UPDATE accounts SET balance=? WHERE userId=?""", (newBalance, accountId))
-        self.cursor.execute("""INSERT INTO history (userId,date,oldBalance,newBalance,total,correction,cashPayment,productSum,products) VALUES (?,datetime('now'),?,?,?,?,?,?,?);""", (accountId, oldBalance, newBalance, total, correction, cashPayment, productSum, products))
-        self.connection.commit()
+        if newBalance >= 0.0:
+            self.cursor.execute("""UPDATE accounts SET balance=? WHERE userId=?""", (newBalance, accountId))
+            self.cursor.execute("""INSERT INTO history (userId,date,oldBalance,newBalance,total,correction,cashPayment,productSum,products) VALUES (?,datetime('now'),?,?,?,?,?,?,?);""", (accountId, oldBalance, newBalance, total, correction, cashPayment, productSum, products))
+            self.connection.commit()
         self.cursor.execute("""SELECT * FROM accounts WHERE userId=?;""", (accountId, ))
         answer = self.cursor.fetchall()
         self.close_db()
@@ -149,10 +159,11 @@ class DBStorage:
 
     def remove_last_accounting(self, accontId):
         self.open_db()
-        self.cursor.execute("""INSERT INTO history (userId,balance) VALUES (?,?);""", (accountId, balance))
-        self.cursor.execute("""UPDATE accounts SET balance=? WHERE userId==?""", (balance, accountId))
-        sql_command = """SELECT * FROM accounts;"""
-        self.cursor.execute(sql_command)
+        self.cursor.execute("""SELECT * FROM history WHERE userId=? LIMIT 1;""", (accountId, ))
+        answer = self.cursor.fetchall()
+        balance = answer['oldBalance']
+        #self.cursor.execute("""UPDATE accounts SET balance=? WHERE userId==?""", (balance, accountId))
+        self.cursor.execute("""SELECT * FROM accounts;""")
         answer = self.cursor.fetchall()
         self.close_db()
         dbJSONString = db_to_json(answer, 'accounts')
@@ -173,7 +184,7 @@ class DBStorage:
         self.cursor.execute("""SELECT * FROM products WHERE name=? LIMIT 1;""", (name, ))
         answer = self.cursor.fetchall()
         self.close_db()
-        dbJSONString = self.db_to_json(answer, "products")
+        dbJSONString = self.db_to_json(answer, 'products')
         return dbJSONString
 
     def get_products(self):

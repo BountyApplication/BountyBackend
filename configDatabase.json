@@ -6,9 +6,10 @@
             "lastname" : "VARCHAR(30)",
             "balance" : "FLOAT",
             "joining" : "DATE",
-            "cardId" : "INTEGER"
+            "cardId" : "INTEGER",
+            "active" : "INTEGER DEFAULT 1"
         },
-        "additional" :"FOREIGN KEY (cardId) REFERENCES cards(cardId)"
+        "additional" :""
     },
     "history" : {
         "columns" : {
@@ -36,7 +37,7 @@
     },
     "cards" : {
         "columns" : {
-            "cardId" : "INTEGER PRIMARY KEY AUTOINCREMENT",
+            "cardId" : "INTEGER PRIMARY KEY UNIQUE",
             "userId" : "INTEGER"
         },
         "additional" :"FOREIGN KEY (userId) REFERENCES accounts(userId)"

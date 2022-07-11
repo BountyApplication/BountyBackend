@@ -53,7 +53,11 @@ _______________''.--o/___  \_______________(_)___________\
 @app.route('/bounty/accounts', methods=['GET', 'POST'])
 def accounts():
     if request.method == 'POST':
-        dbJSONString = DB.add_account(request.headers['firstname'],request.headers['lastname'],request.headers['balance'])
+        if 'cardId' in request.headers:
+            cardId = request.headers['cardId']
+        else:
+            cardId = 0
+        dbJSONString = DB.add_account(request.headers['firstname'],request.headers['lastname'],request.headers['balance'], cardId)
         return dbJSONString
     else:
         dbJSONString = DB.get_accounts()
@@ -65,10 +69,14 @@ def userid(userId : int):
         dbJSONString = DB.add_new_accounting(userId, request.headers['total'], request.headers['products'] , request.headers['correction'], request.headers['cashPayment'], request.headers['productSum'])
         return dbJSONString
     elif request.method == 'PUT':
-        dbJSONString = DB.modify_account(userId,request.headers['firstname'],request.headers['lastname'])
+        if 'cardId' in request.headers:
+            cardId = request.headers['cardId']
+        else:
+            cardId = 0
+        dbJSONString = DB.modify_account(userId,request.headers['firstname'],request.headers['lastname'], cardId, request.headers['active'])
         return dbJSONString
     else:
-        dbJSONString = DB.get_account_by_id(userId)
+        dbJSONString = DB.get_account_by_userid(userId)
         return dbJSONString
 
 @app.route('/bounty/history/<int:userId>', methods=['GET'])
@@ -89,7 +97,8 @@ def products():
         dbJSONString = DB.get_products()
         return dbJSONString
 
-@app.route('/bounty/cards/<int>:cardId', methods=['GET'])
+@app.route('/bounty/cards/<int:cardId>', methods=['GET'])
 def cards(cardId: int):
     if request.method == 'GET':
-        return 'GET card'
+        dbJSONString = DB.get_account_by_cardid(cardId)
+        return dbJSONString
