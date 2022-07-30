@@ -1,19 +1,10 @@
 {
     "accounts" : [
         {
-            "firstname" : "Cornelius",
-            "lastname" : "Bott",
-            "balance" : 20.20
-        },
-        {
-            "firstname" : "Isajah",
-            "lastname" : "Tappe",
-            "balance" : 20.20
-        },
-        {
-            "firstname" : "Michael",
-            "lastname" : "Knoeppler",
-            "balance" : 10.20
+            "firstname" : "Max",
+            "lastname" : "Mustermann",
+            "balance" : 0.0,
+            "active" : 0
         }
     ]
 }
