@@ -1,5 +1,6 @@
 # BountyBackend
 Database server application for our bounty kiosk accounting.
+[![Upload Python Package](https://github.com/BountyApplication/BountyBackend/actions/workflows/python-publish.yml/badge.svg)](https://github.com/BountyApplication/BountyBackend/actions/workflows/python-publish.yml)
 
 # Usage/Prerequisites
 This backend is written in Python using Flask. First install Python 3.10.x and use
