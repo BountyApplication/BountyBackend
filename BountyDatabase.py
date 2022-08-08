@@ -146,7 +146,7 @@ class DBStorage:
         self.cursor.execute("""SELECT balance FROM accounts WHERE userId=?;""", (accountId, ))
         answer = self.cursor.fetchall()
         oldBalance = float(answer[0][0])
-        newBalance = oldBalance - float(total)
+        newBalance = round(oldBalance - float(total), 2)
         if newBalance >= 0.0:
             self.cursor.execute("""UPDATE accounts SET balance=? WHERE userId=?""", (newBalance, accountId))
             self.cursor.execute("""INSERT INTO history (userId,date,oldBalance,newBalance,total,correction,cashPayment,productSum,products) VALUES (?,datetime('now'),?,?,?,?,?,?,?);""", (accountId, oldBalance, newBalance, total, correction, cashPayment, productSum, products))

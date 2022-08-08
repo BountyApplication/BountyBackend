@@ -56,7 +56,7 @@ def accounts():
         if 'cardId' in request.headers:
             cardId = request.headers['cardId']
         else:
-            cardId = 0
+            cardId = None
         dbJSONString = DB.add_account(request.headers['firstname'],request.headers['lastname'],request.headers['balance'], cardId)
         return dbJSONString
     else:
