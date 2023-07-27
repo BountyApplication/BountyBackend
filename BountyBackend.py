@@ -23,7 +23,7 @@ import json
 
 app = Flask("BountyBackend")
 CORS(app)
-DB = BountyDatabase.DBStorage("bounty")
+DB = BountyDatabase.DBStorage("bounty23")
 
 @app.route("/bounty/")
 def bounty():
