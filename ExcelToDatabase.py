@@ -2,7 +2,7 @@ import csv
 import requests
 
 def send_post_request(url, data):
-    response = requests.post(url, data=data)
+    response = requests.post(url, headers=data)
     return response
 
 def main():
