@@ -16,6 +16,7 @@
 #
 
 from flask import Flask
+from flask import send_file
 from flask_cors import CORS
 from flask import request
 import BountyDatabase
@@ -60,7 +61,7 @@ def accounts():
         dbJSONString = DB.add_account(request.headers['firstname'],request.headers['lastname'],request.headers['balance'], cardId)
         return dbJSONString
     else:
-        dbJSONString = DB.get_accounts()
+        dbJSONString = DB.get_all_accounts()
         return dbJSONString
 
 @app.route('/bounty/accounts/<int:userId>', methods=['GET', 'PUT', 'POST'])
@@ -100,5 +101,11 @@ def products():
 @app.route('/bounty/cards/<int:cardId>', methods=['GET'])
 def cards(cardId: int):
     if request.method == 'GET':
-        dbJSONString = DB.get_account_by_cardid(cardId)
+        dbJSONString = DB.get_account_by_cardId(cardId)
         return dbJSONString
+    
+@app.route('/bounty/closing', methods=['GET'])
+def closing():
+    if request.method == 'GET':
+        abs_filepath = DB.export_non_empty_accounts()
+    return send_file(abs_filepath, as_attachment=False)

@@ -18,8 +18,9 @@
 import sqlite3
 import json
 from flask import render_template
-import os.path
+from pathlib import Path
 import threading
+import csv
 
 lock = threading.Lock()
 
@@ -74,6 +75,24 @@ class DBStorage:
                         self.connection.commit()
         self.close_db()
 
+    def db_to_csv(self, dbData, table):
+        columns = self.tables[table]['columns']
+        csvStructure = []
+        if len(dbData) > 1 or table != "accounts": # for table accounts we want to have only a single user replied, not a list
+            for x in range(0, len(dbData)):
+                csvStructure.append([])
+                columnidx = 0
+                for column in columns:
+                    csvStructure[x].append(str(dbData[x][columnidx]))
+                    columnidx += 1
+        elif len(dbData) == 1:
+            csvStructure.append([])
+            columnidx = 0
+            for column in columns:
+                    csvStructure[0].append(dbData[0][columnidx])
+                    columnidx += 1
+        return csvStructure
+
     def db_to_json(self, dbData, table):
         columns = self.tables[table]['columns']
         jsonObject = []
@@ -104,15 +123,28 @@ class DBStorage:
         dbJSONString = self.db_to_json(answer, "accounts")
         return dbJSONString
 
-    def get_accounts(self):
+    def get_all_accounts(self):
         self.open_db()
         self.cursor.execute("""SELECT * FROM accounts;""")
         answer = self.cursor.fetchall()
         self.close_db()
         dbJSONString = self.db_to_json(answer, 'accounts')
         return dbJSONString
+    
+    def export_non_empty_accounts(self):
+        self.open_db()
+        self.cursor.execute("""SELECT * FROM accounts WHERE balance != 0;""")
+        answer = self.cursor.fetchall()
+        self.close_db()
+        dbCSVObject = self.db_to_csv(answer, 'accounts')
+        csv_file_path = Path('./open_accounts.csv')
+        with open(csv_file_path, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            for line in dbCSVObject:
+                writer.writerow(line)
+        return csv_file_path.resolve()
 
-    def get_account_by_userid(self, accountId):
+    def get_account_by_userId(self, accountId):
         self.open_db()
         self.cursor.execute("""SELECT * FROM accounts WHERE userId=?;""", (accountId, ))
         answer = self.cursor.fetchall()
@@ -120,7 +152,7 @@ class DBStorage:
         dbJSONString = self.db_to_json(answer, 'accounts')
         return dbJSONString
 
-    def get_account_by_cardid(self, cardId):
+    def get_account_by_cardId(self, cardId):
         self.open_db()
         self.cursor.execute("""SELECT * FROM accounts WHERE cardId=?;""", (cardId, ))
         answer = self.cursor.fetchall()
@@ -207,9 +239,10 @@ class DBStorage:
 
     def open_db(self):
         lock.acquire(True)
-        self.dbAlreadyExists = os.path.exists(self.name + '.db')
+        db_path = Path(self.name + '.db')
+        self.dbAlreadyExists = Path.exists(db_path)
         # connecting to database
-        self.connection = sqlite3.connect(self.name + '.db')
+        self.connection = sqlite3.connect(db_path)
         self.cursor = self.connection.cursor()
 
     def close_db(self):

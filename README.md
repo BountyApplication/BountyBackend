@@ -4,6 +4,7 @@ Database server application for our bounty kiosk accounting.
 # Usage/Prerequisites
 This backend is written in Python using Flask. First install Python 3.10.x and use
 - pip install flask
+- pip install flask_cors
 
 More details here: https://flask.palletsprojects.com/en/2.1.x/installation/
 
