@@ -2,16 +2,18 @@
 Database server application for our bounty kiosk accounting.
 [![Upload Python Package](https://github.com/BountyApplication/BountyBackend/actions/workflows/python-publish.yml/badge.svg)](https://github.com/BountyApplication/BountyBackend/actions/workflows/python-publish.yml)
 
-# Usage/Prerequisites
+# Usage/Prerequisites Install
+This backend is written in Python using Flask. First install Python 3.10.x and use
 
 install python and pip
+https://pimylifeup.com/raspberry-pi-pip/
 
-This backend is written in Python using Flask. First install Python 3.10.x and use
 - pip install flask
 - pip install flask_cors
 
 More details here: https://flask.palletsprojects.com/en/2.1.x/installation/
 
+# Development
 Then run these commands in a PowerShell:
 - windows: $env:FLASK_APP = "BountyBackend"
 - linux:   export FLASK_APP=BountyBackend
@@ -42,9 +44,10 @@ Make sure this repository is cloned into some working directory e.g. /home/pi/Bo
 ## Nginx configuration
 Add the follwing lines to Nginx's configuration e.g. in the server section in file: /etc/nginx/sites-enabled/default
 
-cd
-sudo nano /etc/nginx/sites-enabled/default
+- cd
+- sudo nano /etc/nginx/sites-enabled/default
 
+Add:
 - location /bounty/ {
 -   proxy_pass http://localhost:9000;
 - }
@@ -52,8 +55,8 @@ sudo nano /etc/nginx/sites-enabled/default
 ## Systemd Unit
 Create a systemd unit e.g. /usr/lib/systemd/system/bountybackend.service with this content:
 
-cd
-sudo nano /usr/lib/systemd/system/bountybackend.service
+- cd
+- sudo nano /usr/lib/systemd/system/bountybackend.service
 
 - [Unit]
 - Description=Bounty Database Server Application
@@ -73,5 +76,13 @@ sudo nano /usr/lib/systemd/system/bountybackend.service
 Remember to enable the systemd unit by
 - systemctl enable bountybackend.service
 
-check working with
-sudo systemctl status bountybackend.service
+# check working with
+- sudo systemctl status bountybackend.service
+
+- sudo reboot
+
+## update code 
+
+- git pull
+
+- sudo reboot
