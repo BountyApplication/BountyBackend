@@ -2,7 +2,7 @@
     "products" : [
         {
             "name" : "Dummydrops",
-            "price" : 0.0
+            "price" : 0.0,
             "active" : 0
         }
     ]

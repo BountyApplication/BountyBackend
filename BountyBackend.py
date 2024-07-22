@@ -24,7 +24,7 @@ import json
 
 app = Flask("BountyBackend")
 CORS(app)
-DB = BountyDatabase.DBStorage("bounty23")
+DB = BountyDatabase.DBStorage("bounty24")
 
 @app.route("/bounty/")
 def bounty():
@@ -77,7 +77,7 @@ def userid(userId : int):
         dbJSONString = DB.modify_account(userId,request.headers['firstname'],request.headers['lastname'], cardId, request.headers['active'])
         return dbJSONString
     else:
-        dbJSONString = DB.get_account_by_userid(userId)
+        dbJSONString = DB.get_account_by_userId(userId)
         return dbJSONString
 
 @app.route('/bounty/history/<int:userId>', methods=['GET'])

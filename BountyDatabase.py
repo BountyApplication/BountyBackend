@@ -58,20 +58,20 @@ class DBStorage:
             self.cursor.execute("""PRAGMA table_info(accounts);""")
             tableinfo = self.cursor.fetchall()
 
-            if not self.dbAlreadyExists:
+            if False: # not self.dbAlreadyExists:
                 if table == "products":
                     self.f = open("dummyProducts.json")
                     products = json.load(self.f)
                     self.f.close()
                     for product in products["products"]:
-                        self.cursor.execute("""INSERT INTO products(name,price) VALUES(?,?);""", (product["name"],product["price"]))
+                        self.cursor.execute("""INSERT INTO products(name,price,active) VALUES(?,?,?);""", (product["name"],product["price"],product["active"]))
                         self.connection.commit()
                 if table == "accounts":
                     self.f = open("dummyAccounts.json")
                     accounts = json.load(self.f)
                     self.f.close()
                     for account in accounts["accounts"]:
-                        self.cursor.execute("""INSERT INTO accounts(firstname,lastname,balance) VALUES(?,?,?);""", (account["firstname"], account["lastname"],account["balance"]))
+                        self.cursor.execute("""INSERT INTO accounts(firstname,lastname,balance,joining,active) VALUES(?,?,?,datetime('now'),?);""", (account["firstname"], account["lastname"],account["balance"],account["active"]))
                         self.connection.commit()
         self.close_db()
 
@@ -189,7 +189,7 @@ class DBStorage:
         dbJSONString = self.db_to_json(answer, 'accounts')
         return dbJSONString
 
-    def remove_last_accounting(self, accontId):
+    def remove_last_accounting(self, accountId):
         self.open_db()
         self.cursor.execute("""SELECT * FROM history WHERE userId=? LIMIT 1;""", (accountId, ))
         answer = self.cursor.fetchall()
@@ -198,7 +198,7 @@ class DBStorage:
         self.cursor.execute("""SELECT * FROM accounts;""")
         answer = self.cursor.fetchall()
         self.close_db()
-        dbJSONString = db_to_json(answer, 'accounts')
+        dbJSONString = self.db_to_json(answer, 'accounts')
         return dbJSONString
     
     def get_history_of_account(self, accountId):
