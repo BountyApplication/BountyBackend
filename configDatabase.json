@@ -31,6 +31,7 @@
             "productId" : "INTEGER PRIMARY KEY AUTOINCREMENT",
             "name" : "VARCHAR(20)",
             "price" : "FLOAT",
+            "place" : "INTEGER",
             "active" : "INTEGER DEFAULT 1"
         },
         "additional" : ""

@@ -94,7 +94,7 @@ def products():
         dbJSONString = DB.add_product(request.headers['name'],request.headers['price'])
         return dbJSONString
     elif request.method == 'PUT':
-        dbJSONString = DB.modify_product(request.headers['productId'],request.headers['name'],request.headers['price'],request.headers['active'])
+        dbJSONString = DB.modify_product(request.headers['productId'],request.headers['name'],request.headers['price'],request.headers['place'],request.headers['active'])
         return dbJSONString
     else:
         dbJSONString = DB.get_products()
