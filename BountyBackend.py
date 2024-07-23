@@ -20,9 +20,11 @@ from flask import send_file
 from flask_cors import CORS
 from flask import request
 import BountyDatabase
-import json
 
 app = Flask("BountyBackend")
+# dashboard.config.init_from(file='/<path to file>/config.cfg')
+# Make sure that you first configure the dashboard, before binding it to your Flask application
+# dashboard.bind(app)
 CORS(app)
 DB = BountyDatabase.DBStorage("bounty24")
 

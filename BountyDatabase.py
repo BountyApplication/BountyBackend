@@ -21,11 +21,13 @@ from flask import render_template
 from pathlib import Path
 import threading
 import csv
+from datetime import datetime;
 
 lock = threading.Lock()
 
 class DBStorage:
     def __init__(self, name):
+        
         print(sqlite3.sqlite_version)
         self.name = name
         self.isCreated = self.open_db()
@@ -181,7 +183,8 @@ class DBStorage:
         newBalance = round(oldBalance - float(total), 2)
         if newBalance >= 0.0:
             self.cursor.execute("""UPDATE accounts SET balance=? WHERE userId=?""", (newBalance, accountId))
-            self.cursor.execute("""INSERT INTO history (userId,date,oldBalance,newBalance,total,correction,cashPayment,productSum,products) VALUES (?,datetime('now'),?,?,?,?,?,?,?);""", (accountId, oldBalance, newBalance, total, correction, cashPayment, productSum, products))
+            now = datetime.now()
+            self.cursor.execute("""INSERT INTO history (userId,date,oldBalance,newBalance,total,correction,cashPayment,productSum,products) VALUES (?,?,?,?,?,?,?,?,?);""", (accountId, now, oldBalance, newBalance, total, correction, cashPayment, productSum, products))
             self.connection.commit()
         self.cursor.execute("""SELECT * FROM accounts WHERE userId=?;""", (accountId, ))
         answer = self.cursor.fetchall()
