@@ -76,7 +76,7 @@ def userid(userId : int):
             cardId = request.headers['cardId']
         else:
             cardId = 0
-        dbJSONString = DB.modify_account(userId,request.headers['firstname'],request.headers['lastname'], cardId, request.headers['active'])
+        dbJSONString = DB.modify_account(userId,request.headers['firstname'],request.headers['lastname'],request.headers['balance'], cardId, request.headers['active'])
         return dbJSONString
     else:
         dbJSONString = DB.get_account_by_userId(userId)
