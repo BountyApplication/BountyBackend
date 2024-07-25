@@ -7,7 +7,7 @@ def send_post_request(url, data):
 
 def main():
     csv_file_path = "data.csv"  # Replace this with the path to your CSV file
-    url = "http://127.0.0.1:5000/bounty/accounts"
+    url = "http://bounty.local:9000/bounty/accounts"
     method = "POST"
 
     with open(csv_file_path, newline='') as csvfile:
