@@ -32,7 +32,8 @@
             "name" : "VARCHAR(20)",
             "price" : "FLOAT",
             "place" : "INTEGER",
-            "active" : "INTEGER DEFAULT 1"
+            "active" : "INTEGER DEFAULT 1",
+            "stock" : "INTEGER DEFAULT NULL"
         },
         "additional" : ""
     },
