@@ -91,10 +91,16 @@ def history(userId : int):
 @app.route('/bounty/products', methods=['GET', 'POST', 'PUT'])
 def products():
     if request.method == 'POST':
-        dbJSONString = DB.add_product(request.headers['name'],request.headers['price'])
+        stock = request.headers.get('stock', None)
+        if stock is not None:
+            stock = int(stock)
+        dbJSONString = DB.add_product(request.headers['name'], request.headers['price'], stock)
         return dbJSONString
     elif request.method == 'PUT':
-        dbJSONString = DB.modify_product(request.headers['productId'],request.headers['name'],request.headers['price'],request.headers['place'],request.headers['active'])
+        stock = request.headers.get('stock', None)
+        if stock is not None:
+            stock = int(stock)
+        dbJSONString = DB.modify_product(request.headers['productId'], request.headers['name'], request.headers['price'], request.headers['place'], request.headers['active'], stock)
         return dbJSONString
     else:
         dbJSONString = DB.get_products()
