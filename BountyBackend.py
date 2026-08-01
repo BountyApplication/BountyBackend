@@ -56,11 +56,9 @@ _______________''.--o/___  \_______________(_)___________\
 @app.route('/bounty/accounts', methods=['GET', 'POST'])
 def accounts():
     if request.method == 'POST':
-        if 'cardId' in request.headers:
-            cardId = request.headers['cardId']
-        else:
-            cardId = None
-        dbJSONString = DB.add_account(request.headers['firstname'],request.headers['lastname'],request.headers['balance'], cardId)
+        data = request.get_json()
+        cardId = data.get('cardId', None)
+        dbJSONString = DB.add_account(data['firstname'], data['lastname'], data['balance'], cardId)
         return dbJSONString
     else:
         dbJSONString = DB.get_all_accounts()
@@ -69,14 +67,13 @@ def accounts():
 @app.route('/bounty/accounts/<int:userId>', methods=['GET', 'PUT', 'POST'])
 def userid(userId : int):
     if request.method == 'POST':
-        dbJSONString = DB.add_new_accounting(userId, request.headers['total'], request.headers['products'] , request.headers['correction'], request.headers['cashPayment'], request.headers['productSum'])
+        data = request.get_json()
+        dbJSONString = DB.add_new_accounting(userId, data['total'], data['products'], data['correction'], data['cashPayment'], data['productSum'])
         return dbJSONString
     elif request.method == 'PUT':
-        if 'cardId' in request.headers:
-            cardId = request.headers['cardId']
-        else:
-            cardId = 0
-        dbJSONString = DB.modify_account(userId,request.headers['firstname'],request.headers['lastname'],request.headers['balance'], cardId, request.headers['active'])
+        data = request.get_json()
+        cardId = data.get('cardId', 0)
+        dbJSONString = DB.modify_account(userId, data['firstname'], data['lastname'], data['balance'], cardId, data['active'])
         return dbJSONString
     else:
         dbJSONString = DB.get_account_by_userId(userId)
@@ -91,16 +88,18 @@ def history(userId : int):
 @app.route('/bounty/products', methods=['GET', 'POST', 'PUT'])
 def products():
     if request.method == 'POST':
-        stock = request.headers.get('stock', None)
+        data = request.get_json()
+        stock = data.get('stock', None)
         if stock is not None:
             stock = int(stock)
-        dbJSONString = DB.add_product(request.headers['name'], request.headers['price'], stock)
+        dbJSONString = DB.add_product(data['name'], data['price'], stock)
         return dbJSONString
     elif request.method == 'PUT':
-        stock = request.headers.get('stock', None)
+        data = request.get_json()
+        stock = data.get('stock', None)
         if stock is not None:
             stock = int(stock)
-        dbJSONString = DB.modify_product(request.headers['productId'], request.headers['name'], request.headers['price'], request.headers['place'], request.headers['active'], stock)
+        dbJSONString = DB.modify_product(data['productId'], data['name'], data['price'], data['place'], data['active'], stock)
         return dbJSONString
     else:
         dbJSONString = DB.get_products()
