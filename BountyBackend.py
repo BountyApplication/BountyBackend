@@ -92,14 +92,16 @@ def products():
         stock = data.get('stock', None)
         if stock is not None:
             stock = int(stock)
-        dbJSONString = DB.add_product(data['name'], data['price'], stock)
+        deposit = int(data.get('deposit') or 0)
+        dbJSONString = DB.add_product(data['name'], data['price'], stock, deposit)
         return dbJSONString
     elif request.method == 'PUT':
         data = request.get_json()
         stock = data.get('stock', None)
         if stock is not None:
             stock = int(stock)
-        dbJSONString = DB.modify_product(data['productId'], data['name'], data['price'], data['place'], data['active'], stock)
+        deposit = int(data.get('deposit') or 0)
+        dbJSONString = DB.modify_product(data['productId'], data['name'], data['price'], data['place'], data['active'], stock, deposit)
         return dbJSONString
     else:
         dbJSONString = DB.get_products()

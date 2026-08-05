@@ -178,21 +178,31 @@ class DBStorage:
     def add_new_accounting(self, accountId, total, products, correction, cashPayment, productSum):
         self.open_db()
         try:
-            self.cursor.execute("""SELECT balance FROM accounts WHERE userId=?;""", (accountId, ))
+            self.cursor.execute("""SELECT balance, deposit FROM accounts WHERE userId=?;""", (accountId, ))
             answer = self.cursor.fetchall()
             oldBalance = float(answer[0][0])
+            oldDeposit = int(answer[0][1] or 0)
             newBalance = round(oldBalance - float(total), 2)
             if newBalance >= 0.0:
                 productList = json.loads(products)
+                depositChange = 0
                 for item in productList:
                     productId = item['productId']
                     amount = item['amount']
-                    if amount > 0:
-                        self.cursor.execute("""SELECT stock FROM products WHERE productId=? AND stock IS NOT NULL;""", (productId, ))
-                        row = self.cursor.fetchone()
-                        if row is not None and row[0] - amount < 0:
-                            return json.dumps({"error": "insufficient stock", "productId": productId})
-                self.cursor.execute("""UPDATE accounts SET balance=? WHERE userId=?""", (newBalance, accountId))
+                    self.cursor.execute("""SELECT stock, deposit FROM products WHERE productId=?;""", (productId, ))
+                    row = self.cursor.fetchone()
+                    if row is None:
+                        continue
+                    stock, deposit = row
+                    if amount > 0 and stock is not None and stock - amount < 0:
+                        return json.dumps({"error": "insufficient stock", "productId": productId})
+                    depositChange += (deposit or 0) * amount
+
+                newDeposit = oldDeposit + depositChange
+                if newDeposit < 0:
+                    return json.dumps({"error": "insufficient deposit", "deposit": oldDeposit})
+
+                self.cursor.execute("""UPDATE accounts SET balance=?, deposit=? WHERE userId=?""", (newBalance, newDeposit, accountId))
                 now = datetime.now()
                 self.cursor.execute("""INSERT INTO history (userId,date,oldBalance,newBalance,total,correction,cashPayment,productSum,products) VALUES (?,?,?,?,?,?,?,?,?);""", (accountId, now, oldBalance, newBalance, total, correction, cashPayment, productSum, products))
                 for item in productList:
@@ -228,12 +238,12 @@ class DBStorage:
         dbJSONString = self.db_to_json(answer, 'history')
         return dbJSONString
 
-    def add_product(self, name, price, stock=None):
+    def add_product(self, name, price, stock=None, deposit=0):
         self.open_db()
         self.cursor.execute("""SELECT * FROM products;""")
         answer = self.cursor.fetchall()
         print(len(answer))
-        self.cursor.execute("""INSERT INTO products(name,price,place,stock) VALUES(?,?,?,?);""", (name, price, len(answer), stock))
+        self.cursor.execute("""INSERT INTO products(name,price,place,stock,deposit) VALUES(?,?,?,?,?);""", (name, price, len(answer), stock, deposit))
         self.connection.commit()
         self.cursor.execute("""SELECT * FROM products WHERE name=? LIMIT 1;""", (name, ))
         answer = self.cursor.fetchall()
@@ -249,9 +259,9 @@ class DBStorage:
         dbJSONString = self.db_to_json(answer, 'products')
         return dbJSONString
 
-    def modify_product(self, id, name, price, place, active, stock):
+    def modify_product(self, id, name, price, place, active, stock, deposit=0):
         self.open_db()
-        self.cursor.execute("""UPDATE products SET name=?, price=?, place=?, active=?, stock=? WHERE productId=?;""", (name, price, place, active, stock, id))
+        self.cursor.execute("""UPDATE products SET name=?, price=?, place=?, active=?, stock=?, deposit=? WHERE productId=?;""", (name, price, place, active, stock, deposit, id))
         self.connection.commit()
         self.cursor.execute("""SELECT * FROM products WHERE productId=?;""", (id, ))
         answer = self.cursor.fetchall()
