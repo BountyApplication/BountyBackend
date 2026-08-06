@@ -23,7 +23,8 @@
             "correction" : "FLOAT",
             "cashPayment" : "FLOAT",
             "productSum" : "FLOAT",
-            "products" : "VARCHAR(1500)"
+            "products" : "VARCHAR(1500)",
+            "donation" : "FLOAT DEFAULT 0"
         },
         "additional" : "FOREIGN KEY (userId) REFERENCES accounts(userId)"
     },
@@ -45,5 +46,12 @@
             "userId" : "INTEGER"
         },
         "additional" :"FOREIGN KEY (userId) REFERENCES accounts(userId)"
+    },
+    "settings" : {
+        "columns" : {
+            "key" : "VARCHAR(40) PRIMARY KEY",
+            "value" : "VARCHAR(100)"
+        },
+        "additional" : ""
     }
 }

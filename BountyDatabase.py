@@ -175,7 +175,7 @@ class DBStorage:
         dbJSONString = self.db_to_json(answer, 'accounts')
         return dbJSONString
 
-    def add_new_accounting(self, accountId, total, products, correction, cashPayment, productSum):
+    def add_new_accounting(self, accountId, total, products, correction, cashPayment, productSum, donation=0):
         self.open_db()
         try:
             self.cursor.execute("""SELECT balance, deposit FROM accounts WHERE userId=?;""", (accountId, ))
@@ -204,7 +204,7 @@ class DBStorage:
 
                 self.cursor.execute("""UPDATE accounts SET balance=?, deposit=? WHERE userId=?""", (newBalance, newDeposit, accountId))
                 now = datetime.now()
-                self.cursor.execute("""INSERT INTO history (userId,date,oldBalance,newBalance,total,correction,cashPayment,productSum,products) VALUES (?,?,?,?,?,?,?,?,?);""", (accountId, now, oldBalance, newBalance, total, correction, cashPayment, productSum, products))
+                self.cursor.execute("""INSERT INTO history (userId,date,oldBalance,newBalance,total,correction,cashPayment,productSum,products,donation) VALUES (?,?,?,?,?,?,?,?,?,?);""", (accountId, now, oldBalance, newBalance, total, correction, cashPayment, productSum, products, donation))
                 for item in productList:
                     self.cursor.execute(
                         """UPDATE products SET stock = stock - ? WHERE productId = ? AND stock IS NOT NULL;""",
@@ -268,6 +268,54 @@ class DBStorage:
         self.close_db()
         dbJSONString = self.db_to_json(answer, 'products')
         return dbJSONString
+
+    def get_settings(self):
+        self.open_db()
+        try:
+            self.cursor.execute("""SELECT key, value FROM settings;""")
+            return json.dumps({row[0]: row[1] for row in self.cursor.fetchall()})
+        finally:
+            self.close_db()
+
+    def set_setting(self, key, value):
+        self.open_db()
+        try:
+            self.cursor.execute("""INSERT INTO settings(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=?;""", (key, value, value))
+            self.connection.commit()
+            self.cursor.execute("""SELECT key, value FROM settings;""")
+            return json.dumps({row[0]: row[1] for row in self.cursor.fetchall()})
+        finally:
+            self.close_db()
+
+    # totals for the closing screen, summed up here so the clients do not have to load every booking
+    def get_summary(self):
+        self.open_db()
+        try:
+            self.cursor.execute("""SELECT
+                    COALESCE(SUM(donation), 0),
+                    COALESCE(SUM(CASE WHEN cashPayment < 0 THEN -cashPayment ELSE 0 END), 0),
+                    COALESCE(SUM(CASE WHEN cashPayment > 0 THEN cashPayment ELSE 0 END), 0),
+                    COALESCE(SUM(productSum), 0)
+                FROM history;""")
+            donation, paidOut, paidIn, productSum = self.cursor.fetchone()
+
+            self.cursor.execute("""SELECT COALESCE(SUM(balance), 0), COUNT(*) FROM accounts WHERE active=1 AND balance != 0;""")
+            openBalance, openAccounts = self.cursor.fetchone()
+
+            self.cursor.execute("""SELECT COALESCE(SUM(deposit), 0) FROM accounts WHERE active=1;""")
+            openDeposit = self.cursor.fetchone()[0]
+
+            return json.dumps({
+                "donation": round(donation, 2),
+                "paidOut": round(paidOut, 2),
+                "paidIn": round(paidIn, 2),
+                "productSum": round(productSum, 2),
+                "openBalance": round(openBalance, 2),
+                "openAccounts": openAccounts,
+                "openDeposit": openDeposit,
+            })
+        finally:
+            self.close_db()
 
     def open_db(self):
         lock.acquire(True)

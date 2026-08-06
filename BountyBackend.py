@@ -68,7 +68,7 @@ def accounts():
 def userid(userId : int):
     if request.method == 'POST':
         data = request.get_json()
-        dbJSONString = DB.add_new_accounting(userId, data['total'], data['products'], data['correction'], data['cashPayment'], data['productSum'])
+        dbJSONString = DB.add_new_accounting(userId, data['total'], data['products'], data['correction'], data['cashPayment'], data['productSum'], data.get('donation') or 0)
         return dbJSONString
     elif request.method == 'PUT':
         data = request.get_json()
@@ -113,6 +113,21 @@ def cards(cardId: int):
         dbJSONString = DB.get_account_by_cardId(cardId)
         return dbJSONString
     
+@app.route('/bounty/settings', methods=['GET', 'PUT'])
+def settings():
+    if request.method == 'PUT':
+        data = request.get_json()
+        dbJSONString = DB.set_setting(data['key'], data['value'])
+        return dbJSONString
+    else:
+        dbJSONString = DB.get_settings()
+        return dbJSONString
+
+@app.route('/bounty/summary', methods=['GET'])
+def summary():
+    dbJSONString = DB.get_summary()
+    return dbJSONString
+
 @app.route('/bounty/closing', methods=['GET'])
 def closing():
     if request.method == 'GET':
