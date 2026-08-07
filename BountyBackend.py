@@ -73,7 +73,9 @@ def userid(userId : int):
     elif request.method == 'PUT':
         data = request.get_json()
         cardId = data.get('cardId', 0)
-        dbJSONString = DB.modify_account(userId, data['firstname'], data['lastname'], data['balance'], cardId, data['active'])
+        note = data.get('note') or None
+        noteLevel = data.get('noteLevel') or None
+        dbJSONString = DB.modify_account(userId, data['firstname'], data['lastname'], data['balance'], cardId, data['active'], note, noteLevel)
         return dbJSONString
     else:
         dbJSONString = DB.get_account_by_userId(userId)

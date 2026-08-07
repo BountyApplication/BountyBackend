@@ -8,7 +8,9 @@
             "joining" : "DATE",
             "cardId" : "INTEGER",
             "active" : "INTEGER DEFAULT 1",
-            "deposit" : "INTEGER DEFAULT 0"
+            "deposit" : "INTEGER DEFAULT 0",
+            "note" : "VARCHAR(200)",
+            "noteLevel" : "VARCHAR(10)"
         },
         "additional" :""
     },
